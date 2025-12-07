@@ -1,9 +1,9 @@
 import re
 
 
-def filter_vacancies(vacancies_list: list[dict], filter_words: str) -> list[dict]:
+def filter_vacancies(vacancies_list: list[dict], filter_words: list[str]) -> list[dict]:
     """Фильтрует вакансии по ключевым словам"""
-    words = filter_words.split(" ")
+    words = filter_words
     result = []
 
     for vacancy in vacancies_list:

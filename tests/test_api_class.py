@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import patch, Mock
-import requests
 from abc import ABC, abstractmethod
+from unittest.mock import Mock, patch
+
+import requests
 
 
 class AbstractAPI(ABC):

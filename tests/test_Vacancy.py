@@ -1,5 +1,7 @@
 import unittest
+
 from src.Vacancy import Vacancy
+
 
 class TestVacancy(unittest.TestCase):
 

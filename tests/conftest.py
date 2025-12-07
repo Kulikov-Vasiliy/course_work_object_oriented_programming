@@ -1,8 +1,9 @@
-import pytest
 import json
 
-from src.Vacancy import Vacancy
+import pytest
+
 from src.json_class import JSONSaver
+from src.Vacancy import Vacancy
 
 
 @pytest.fixture

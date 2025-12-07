@@ -1,7 +1,9 @@
-import pytest
-import os
 import json
-from src.json_class import JSONSaver, AbstractJSONSaver
+import os
+
+import pytest
+
+from src.json_class import AbstractJSONSaver, JSONSaver
 
 
 def test_initialization(temp_json_file):
