@@ -5,14 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="738282aa-67df-40f8-8cc2-0f4b8a3bf4a5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/htmlcov/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_Vacancy.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_Vacancy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_api_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_api_class.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_json_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_json_class.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,12 +35,12 @@
     &quot;assignee&quot;: &quot;Kulikov-Vasiliy&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:Kulikov-Vasiliy/course_work_object_oriented_programming.git&quot;,
-    &quot;accountId&quot;: &quot;93381122-190e-4150-9ecc-4f0faa245bbf&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Kulikov-Vasiliy/course_work_object_oriented_programming.git",
+    "accountId": "93381122-190e-4150-9ecc-4f0faa245bbf"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -56,27 +50,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Python tests in api_class.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_Vacancy.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_api_class.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_json_class.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_utils.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_json_class.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/course__work__object__oriented__programming&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Python tests in api_class.py.executor": "Run",
+    "Python tests.Python tests in test_Vacancy.py.executor": "Run",
+    "Python tests.Python tests in test_api_class.py.executor": "Run",
+    "Python tests.Python tests in test_json_class.py.executor": "Run",
+    "Python tests.Python tests in test_utils.py.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.test_json_class.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "#1 on feature/course__work__object__orient…mming"
   }
-}</component>
-  <component name="RunManager">
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.main" />
-        <item itemvalue="Python.main" />
-      </list>
-    </recent_temporary>
-  </component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
