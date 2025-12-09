@@ -8,9 +8,11 @@ from src.json_class import AbstractJSONSaver, JSONSaver
 
 def test_initialization(temp_json_file):
     """Проверяет, что файл создается при инициализации."""
+    # os.path.exists работает и с Path объектами
     assert os.path.exists(temp_json_file)
     with open(temp_json_file, "r", encoding="utf-8") as f:
         assert json.load(f) == []
+
 
 
 def test_add_vacancy(json_saver, sample_vacancies):
@@ -56,6 +58,7 @@ def test_delete_vacancy_by_criteria(json_saver, sample_vacancies, capsys):
     assert data[0]["title"] == "Data Scientist"
 
     captured = capsys.readouterr()
+    # Проверяем наличие имени файла (которое теперь является объектом Path в строке вывода)
     assert "Удалено 2 вакансий из" in captured.out
 
 
@@ -72,6 +75,7 @@ def test_delete_vacancy_by_object(json_saver, sample_vacancies, capsys):
     assert data[0]["title"] == "Python Developer"
 
     captured = capsys.readouterr()
+    # Проверяем наличие имени файла (которое теперь является объектом Path в строке вывода)
     assert "Удалено 2 вакансий из" in captured.out
 
 
