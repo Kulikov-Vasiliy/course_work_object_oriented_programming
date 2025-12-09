@@ -13,36 +13,32 @@ class TestVacancy(unittest.TestCase):
             salary="100000 - 150000 RUB",
             currency="RUB",
             requirement="Опыт работы с Python от 3 лет",
-            responsibility="Разработка бэкенда"
+            responsibility="Разработка бэкенда",
         )
         self.json_data_full = {
-            'items': [
+            "items": [
                 {
-                    'name': 'Аналитик данных',
-                    'alternate_url': 'http://example.com/vacancy/2',
-                    'salary': {
-                        'from': 80000,
-                        'to': 120000,
-                        'currency': 'RUR'
+                    "name": "Аналитик данных",
+                    "alternate_url": "http://example.com/vacancy/2",
+                    "salary": {"from": 80000, "to": 120000, "currency": "RUR"},
+                    "snippet": {
+                        "requirement": "Опыт работы с SQL",
+                        "responsibility": "Анализ данных",
                     },
-                    'snippet': {
-                        'requirement': 'Опыт работы с SQL',
-                        'responsibility': 'Анализ данных'
-                    }
                 }
             ]
         }
         self.json_data_partial = {
-            'items': [
+            "items": [
                 {
-                    'name': 'Менеджер проектов',
-                    'alternate_url': 'http://example.com/vacancy/3',
-                    'salary': None,
-                    'snippet': None
+                    "name": "Менеджер проектов",
+                    "alternate_url": "http://example.com/vacancy/3",
+                    "salary": None,
+                    "snippet": None,
                 }
             ]
         }
-        self.json_data_empty = {'items': []}
+        self.json_data_empty = {"items": []}
 
     def test_init(self):
         """Тестирование инициализации объекта Vacancy"""
@@ -61,7 +57,9 @@ class TestVacancy(unittest.TestCase):
 
     def test_str_representation(self):
         """Тестирование метода __str__"""
-        expected_str_start = "Вакансия: Разработчик Python\nЗарплата: 100000 - 150000 RUB\nURL: http://example.com/vacancy/1\n"
+        expected_str_start = (
+            "Вакансия: Разработчик Python\nЗарплата: 100000 - 150000 RUB\nURL: http://example.com/vacancy/1\n"
+        )
         self.assertTrue(str(self.vacancy).startswith(expected_str_start))
         self.assertIn("Требования: Опыт работы с Python от 3 лет", str(self.vacancy))
 
@@ -76,21 +74,21 @@ class TestVacancy(unittest.TestCase):
         self.assertEqual(len(vacancies), 1)
         v = vacancies[0]
         self.assertIsInstance(v, Vacancy)
-        self.assertEqual(v.title, 'Аналитик данных')
-        self.assertEqual(v.salary, '80000 - 120000 RUR')
-        self.assertEqual(v.requirement, 'Опыт работы с SQL')
-        self.assertEqual(v.responsibility, 'Анализ данных')
+        self.assertEqual(v.title, "Аналитик данных")
+        self.assertEqual(v.salary, "80000 - 120000 RUR")
+        self.assertEqual(v.requirement, "Опыт работы с SQL")
+        self.assertEqual(v.responsibility, "Анализ данных")
 
     def test_cast_to_object_list_partial_data(self):
         """Тестирование cast_to_object_list с неполными данными (проверка значений по умолчанию)"""
         vacancies = Vacancy.cast_to_object_list(self.json_data_partial)
         self.assertEqual(len(vacancies), 1)
         v = vacancies[0]
-        self.assertEqual(v.title, 'Менеджер проектов')
-        self.assertEqual(v.salary, '0')
+        self.assertEqual(v.title, "Менеджер проектов")
+        self.assertEqual(v.salary, "0")
         self.assertIsNone(v.currency)
-        self.assertEqual(v.requirement, 'Требования не указаны')
-        self.assertEqual(v.responsibility, 'Обязанности не указаны')
+        self.assertEqual(v.requirement, "Требования не указаны")
+        self.assertEqual(v.responsibility, "Обязанности не указаны")
 
     def test_cast_to_object_list_empty_data(self):
         """Тестирование cast_to_object_list с пустым списком вакансий"""

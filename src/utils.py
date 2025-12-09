@@ -1,16 +1,12 @@
-import re
-
-
-def filter_vacancies(vacancies_list: list[dict], filter_words: list[str]) -> list[dict]:
+def filter_vacancies(vacancies_list: list[dict], filter_words: str) -> list[dict]:
     """Фильтрует вакансии по ключевым словам"""
     if not filter_words:
         return []
 
-    words = filter_words
     result = []
 
     for vacancy in vacancies_list:
-        title = vacancy.title.lower()
+        title = vacancy.title.lower()  # type: ignore[attr-defined]
         if any(word.lower() in title for word in filter_words if word):
             result.append(vacancy)
 
@@ -22,28 +18,28 @@ def get_vacancies_by_salary(filtered_vacancies: list[dict], salary_range: str) -
     if not filtered_vacancies or not salary_range:
         return []
 
-    result = []
+    result = []  # type: ignore[var-annotated]
     try:
-        salary_from, salary_to = map(int, salary_range.split(' - '))
+        salary_from, salary_to = map(int, salary_range.split(" - "))
     except (ValueError, AttributeError):
         return filtered_vacancies
 
     result = []
 
     for vacancy in filtered_vacancies:
-        if not vacancy.salary or vacancy.salary == '0':
+        if not vacancy.salary or vacancy.salary == "0":  # type: ignore[attr-defined]
             continue
 
             # Извлекаем зарплату из строки
-        salary_str = vacancy.salary
+        salary_str = vacancy.salary  # type: ignore[attr-defined]
 
         # Если есть 'currency=', убираем эту часть
-        if 'currency=' in salary_str:
-            salary_str = salary_str.split(' currency=')[0]
+        if "currency=" in salary_str:
+            salary_str = salary_str.split(" currency=")[0]
 
         # Извлекаем числа из строки
         numbers = []
-        for part in salary_str.replace('-', ' ').replace('—', ' ').split():
+        for part in salary_str.replace("-", " ").replace("—", " ").split():
             try:
                 numbers.append(int(part))
             except ValueError:
@@ -65,23 +61,23 @@ def get_vacancies_by_salary(filtered_vacancies: list[dict], salary_range: str) -
     return result
 
 
-def sort_vacancies(ranged_vacancies: list[dict], ascending: bool=True) -> list[dict]:
+def sort_vacancies(ranged_vacancies: list[dict], ascending: bool = True) -> list[dict]:
     """Сортировка фильтрованных вакансий"""
     if not ranged_vacancies:
         return []
 
-    def get_salary(vacancy):
+    def get_salary(vacancy):  # type: ignore[no-untyped-def]
         """Извлекает минимальную зарплату из строки"""
         if not vacancy.salary:
             return 0
 
         salary_str = vacancy.salary
-        if 'currency=' in salary_str:
-            salary_str = salary_str.split(' currency=')[0]
+        if "currency=" in salary_str:
+            salary_str = salary_str.split(" currency=")[0]
 
         # Ищем первое число в строке
         numbers = []
-        for part in salary_str.replace('-', ' ').replace('—', ' ').split():
+        for part in salary_str.replace("-", " ").replace("—", " ").split():
             try:
                 numbers.append(int(part))
                 break  # Берем первое найденное число
@@ -101,7 +97,7 @@ def get_top_vacancies(sorted_vacancies: list[dict], top_n: int) -> list[dict]:
     return sorted_vacancies[:top_n]
 
 
-def print_vacancies(top_vacancies):
+def print_vacancies(top_vacancies):  # type: ignore[no-untyped-def]
     """Вывод желаемого количества вакансий в человекочитаемом виде"""
     if not top_vacancies:
         print("Нет вакансий для отображения.")
@@ -113,12 +109,12 @@ def print_vacancies(top_vacancies):
         print(f"URL: {vacancy.url}")
 
         # Обрезаем длинный текст
-        req = vacancy.requirement if hasattr(vacancy, 'requirement') else "Не указаны"
+        req = vacancy.requirement if hasattr(vacancy, "requirement") else "Не указаны"
         if len(req) > 150:
             req = req[:150] + "..."
         print(f"Требования: {req}")
 
-        resp = vacancy.responsibility if hasattr(vacancy, 'responsibility') else "Не указаны"
+        resp = vacancy.responsibility if hasattr(vacancy, "responsibility") else "Не указаны"
         if len(resp) > 150:
             resp = resp[:150] + "..."
         print(f"Обязанности: {resp}")

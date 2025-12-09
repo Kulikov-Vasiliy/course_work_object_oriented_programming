@@ -18,15 +18,17 @@ class HeadHunterAPI(AbstractAPI):
     Класс для работы с платформой hh.ru:
     должен уметь подключаться к API и получать вакансии
     """
+
     search_query: str
     only_with_salary: bool
     no_magic: bool
 
-
     def __init__(
-            self, search_query:str, currency: str = "RUR",
-            only_with_salary:bool=False,
-            no_magic:bool=True,
+        self,
+        search_query: str,
+        currency: str = "RUR",
+        only_with_salary: bool = False,
+        no_magic: bool = True,
     ):
         self.text = search_query if search_query != "" else "Введите запрос"
         self.only_with_salary = only_with_salary if only_with_salary is True else False
@@ -39,8 +41,9 @@ class HeadHunterAPI(AbstractAPI):
         try:
             url = "https://api.hh.ru/vacancies"
             payload = {
-                "text": self.text, "only_with_salary": self.only_with_salary,
-                "no_magic": self.no_magic
+                "text": self.text,
+                "only_with_salary": self.only_with_salary,
+                "no_magic": self.no_magic,
             }
             response = requests.get(url, params=payload)
             response.raise_for_status()
@@ -48,10 +51,10 @@ class HeadHunterAPI(AbstractAPI):
 
             # Этот цикл for не используется для возврата данных, он просто перебирает элементы
             # для примера тестирования мы можем проигнорировать его эффект на возвращаемое значение
-            for item in result.get('items', []):
-                salary_info = item.get('salary', {})
-                salary = salary_info.get('from', 0) or salary_info.get('to', 0)  # Если отсутствует, вернёт 0
-                currency = salary_info.get('currency', '')  # Если отсутствует, вернёт пустую строку
+            for item in result.get("items", []):
+                salary_info = item.get("salary", {})
+                salary = salary_info.get("from", 0) or salary_info.get("to", 0)  # Если отсутствует, вернёт 0
+                currency = salary_info.get("currency", "")  # Если отсутствует, вернёт пустую строку
 
             return result
 
@@ -83,7 +86,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         hh_api_default = HeadHunterAPI(search_query="")
         self.assertEqual(hh_api_default.text, "Введите запрос")
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_get_vacancies_success(self, mock_get):
         """Тестирование успешного получения данных из API"""
         # Создаем Mock-объект ответа
@@ -91,10 +94,13 @@ class TestHeadHunterAPI(unittest.TestCase):
         mock_response.status_code = 200
         # Определяем, что должен возвращать response.json()
         mock_response.json.return_value = {
-            'items': [
-                {'name': 'Vacancy 1', 'salary': {'from': 100, 'to': 200, 'currency': 'RUR'}}
+            "items": [
+                {
+                    "name": "Vacancy 1",
+                    "salary": {"from": 100, "to": 200, "currency": "RUR"},
+                }
             ],
-            'found': 1
+            "found": 1,
         }
         # Устанавливаем, что requests.get должен вернуть наш mock-объект
         mock_get.return_value = mock_response
@@ -106,15 +112,15 @@ class TestHeadHunterAPI(unittest.TestCase):
         expected_params = {
             "text": "Python developer",
             "only_with_salary": True,
-            "no_magic": True
+            "no_magic": True,
         }
         mock_get.assert_called_once_with(expected_url, params=expected_params)
 
         # Проверяем, что результат соответствует нашим mock-данным
-        self.assertEqual(result['found'], 1)
-        self.assertEqual(result['items'][0]['name'], 'Vacancy 1')
+        self.assertEqual(result["found"], 1)
+        self.assertEqual(result["items"][0]["name"], "Vacancy 1")
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_get_vacancies_http_error_404(self, mock_get):
         """Тестирование обработки ошибки 404"""
         mock_response = Mock()
@@ -126,7 +132,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         result = self.hh_api.get_vacancies()
         self.assertEqual(result, "404\nУказанная вакансия не существует")
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_get_vacancies_http_error_403(self, mock_get):
         """Тестирование обработки ошибки 403 (капча)"""
         mock_response = Mock()

@@ -1,15 +1,15 @@
-import unittest
 import io
+import unittest
 from unittest.mock import patch
 
-from src.Vacancy import Vacancy
 from src.utils import (
     filter_vacancies,
-    get_vacancies_by_salary,
-    sort_vacancies,
     get_top_vacancies,
-    print_vacancies
+    get_vacancies_by_salary,
+    print_vacancies,
+    sort_vacancies,
 )
+from src.Vacancy import Vacancy
 
 
 class TestUtilsFunctions(unittest.TestCase):
@@ -18,11 +18,31 @@ class TestUtilsFunctions(unittest.TestCase):
     def setUp(self):
         # Подготовка фиктивных данных (список объектов Vacancy)
         self.vacancies_list = [
-            Vacancy("Python Developer (Junior)", url='url1', salary="50000 - 70000 RUB", currency="RUB"),
-            Vacancy("Senior Python Engineer", url='url2', salary="150000 - 200000 RUB", currency="RUB"),
-            Vacancy("Data Scientist", url='url3', salary="100000 - 130000 RUB", currency="RUB"),
-            Vacancy("QA Engineer", url='url4', salary="0", currency=None),
-            Vacancy("Java Developer", url='url5', salary="80000 - 120000 RUB", currency="RUB"),
+            Vacancy(
+                "Python Developer (Junior)",
+                url="url1",
+                salary="50000 - 70000 RUB",
+                currency="RUB",
+            ),
+            Vacancy(
+                "Senior Python Engineer",
+                url="url2",
+                salary="150000 - 200000 RUB",
+                currency="RUB",
+            ),
+            Vacancy(
+                "Data Scientist",
+                url="url3",
+                salary="100000 - 130000 RUB",
+                currency="RUB",
+            ),
+            Vacancy("QA Engineer", url="url4", salary="0", currency=None),
+            Vacancy(
+                "Java Developer",
+                url="url5",
+                salary="80000 - 120000 RUB",
+                currency="RUB",
+            ),
         ]
 
     def test_filter_vacancies_empty_filter_words(self):
@@ -36,13 +56,11 @@ class TestUtilsFunctions(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertIn("Python Developer (Junior)", [v.title for v in result])
 
-
     def test_filter_vacancies_no_match(self):
         """Тестирование, когда ни одно слово из списка не найдено"""
         filter_words = ["GoLang", "C++"]
         filtered = filter_vacancies(self.vacancies_list, filter_words)
         self.assertEqual(len(filtered), 0)
-
 
     def test_get_vacancies_by_salary_range_match(self):
         """Проверка фильтрации по корректному диапазону ЗП"""
@@ -75,7 +93,7 @@ class TestUtilsFunctions(unittest.TestCase):
         self.assertEqual(len(top_list), 2)
         self.assertEqual(top_list[0].title, "Python Developer (Junior)")
 
-    @patch('sys.stdout', new_callable=io.StringIO)
+    @patch("sys.stdout", new_callable=io.StringIO)
     def test_print_vacancies_standard_output(self, mock_stdout):
         """Проверка стандартного вывода одной вакансии"""
         print_vacancies(self.vacancies_list[:1])
