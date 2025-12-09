@@ -1,7 +1,6 @@
 class Vacancy:
     """Класс для обработки вакансиями"""
 
-    # [no-untyped-def]
     def __init__(
         self,
         title: str,

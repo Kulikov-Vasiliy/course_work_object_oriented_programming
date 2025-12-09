@@ -43,7 +43,7 @@ class AbstractAPI(ABC):
 
     @abstractmethod
     def get_vacancies(self):  # type: ignore[no-untyped-def]
-        pass
+        return self.__get_vacancies()
 
 
 class HeadHunterAPI(AbstractAPI):
@@ -63,22 +63,22 @@ class HeadHunterAPI(AbstractAPI):
         only_with_salary: bool = False,
         no_magic: bool = True,
     ):
-        self.text = search_query if search_query != "" else "Введите запрос"
-        self.only_with_salary = only_with_salary if only_with_salary is True else False
+        self.__text = search_query if search_query != "" else "Введите запрос"
+        self.__only_with_salary = only_with_salary if only_with_salary is True else False
         self.currency = currency
-        self.no_magic = no_magic
+        self.__no_magic = no_magic
 
     def get_vacancies(self):  # type: ignore[no-untyped-def]
         """Подключение к api и получение вакансий с фильтрацией"""
 
         try:
-            url = "https://api.hh.ru/vacancies"
-            payload = {
-                "text": self.text,
-                "only_with_salary": self.only_with_salary,
-                "no_magic": self.no_magic,
+            __url = "https://api.hh.ru/vacancies"
+            __payload = {
+                "text": self.__text,
+                "only_with_salary": self.__only_with_salary,
+                "no_magic": self.__no_magic,
             }
-            response = requests.get(url, params=payload)
+            response = requests.get(__url, params=__payload)
             response.raise_for_status()
             result = response.json()
 
