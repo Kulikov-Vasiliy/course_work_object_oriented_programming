@@ -8,7 +8,7 @@ from src.utils import (
     print_vacancies,
     sort_vacancies,
 )
-from src.Vacancy import Vacancy
+from src.vacancy import Vacancy
 
 path_file = DATA_PATH
 
@@ -33,14 +33,14 @@ def user_interaction() -> None:
     )
     hh_vacancies_json = hh_api.get_vacancies()
 
-    if isinstance(hh_vacancies_json, str):
-        print(hh_vacancies_json)
-        return
+    # if isinstance(hh_vacancies_json, str):
+    #     print(hh_vacancies_json)
+    #     return
 
     # Преобразование набора данных из JSON в список объектов
     vacancies_list = Vacancy.cast_to_object_list(hh_vacancies_json)
-    for vac in vacancies_list[:top_n]:
-        print(vac)
+    # for vac in vacancies_list[:top_n]:
+    #     print(vac)
 
     filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
     # print(filtered_vacancies)

@@ -70,6 +70,7 @@ class HeadHunterAPI(AbstractAPI):
 
     def get_vacancies(self):  # type: ignore[no-untyped-def]
         """Подключение к api и получение вакансий с фильтрацией"""
+        wanted = []
 
         try:
             __url = "https://api.hh.ru/vacancies"
@@ -82,21 +83,84 @@ class HeadHunterAPI(AbstractAPI):
             response.raise_for_status()
             result = response.json()
 
-            for item in result.get("items", []):
-                salary_info = item.get("salary", {})
-                salary = salary_info.get("from", 0) or salary_info.get("to", 0)  # noqa F841
-                # Если отсутствует, вернёт 0
-                currency = salary_info.get("currency", "")  # noqa F841
-                # Если отсутствует, вернёт пустую строку
-
-            return result
-
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 400:
-                return "400\nПараметры переданы с ошибкой"
+                raise
             elif e.response.status_code == 403:
-                return "403\nТребуется ввести капчу"
+                raise
             elif e.response.status_code == 404:
-                return "404\nУказанная вакансия не существует"
+                raise
             else:
-                return f"Произошла ошибка: {e}"
+                raise
+
+        for item in result.get("items", []):
+            if item:
+                # print(item)
+                title = item.get("name")
+                alternate_url = item.get("url")
+                salary_info = item.get("salary", {})
+                if salary_info:
+                    salary_from = salary_info.get("from")
+                    salary_to = salary_info.get("to")
+                    currency = salary_info.get("currency")
+                else:
+                    salary_from = "0"
+                    salary_to = "0"
+                    currency = ""
+                address_info = item.get("address", {})
+                if address_info:
+                    city = address_info.get("city", "Не указано")
+                    street = address_info.get("street", "Не указано")
+                    building = address_info.get("building", "Не указано")
+                else:
+                    city = "Не указано"
+                    street = "Не указано"
+                    building = "Не указано"
+                schedule_info = item.get("schedule", {})
+                schedule = schedule_info.get("name", "Не указано")
+                name = ""
+                if item.get("work_schedule_by_days"):
+                    for el in item.get("work_schedule_by_days"):
+                        name += el.get("name", "Не указано")
+                employer_info = item.get("employer")
+                em_id = employer_info.get("id")
+                em_name = employer_info.get("name")
+                em_url = employer_info.get("url")
+                # print(f"Полученные данные: {snippet}")
+                snippet = item.get("snippet", {})
+                requirement = snippet.get("requirement")
+                responsibility = snippet.get("responsibility")
+                # print(f"Требования: {requirement}, Обязанности: {responsibility}")
+                experience_info = item.get("experience", {})
+                experience = experience_info.get("name", "Без опыта или не требуется")
+                employment_info = item.get("employment", {})
+                employment = employment_info.get("name", "Не указано")
+                employment_form_info = item.get("employment_form")
+                employment_form = employment_form_info.get("name", "Не указана")
+
+                wanted.append(
+                    {
+                        "title": title,
+                        "alternate_url": alternate_url,
+                        "salary_from": salary_from,
+                        "salary_to": salary_to,
+                        "currency": currency,
+                        "city": city,
+                        "street": street,
+                        "building": building,
+                        "schedule": schedule,
+                        "name": name,
+                        "employer_id": em_id,
+                        "employer_name": em_name,
+                        "employer_url": em_url,
+                        "responsibility": responsibility,
+                        "requirement": requirement,
+                        "experience": experience,
+                        "employment": employment,
+                        "employment_form": employment_form,
+                    }
+                )
+
+        if not wanted:
+            return []
+        return wanted

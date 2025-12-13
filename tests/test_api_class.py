@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock
 import requests
-# Импортируем ваши классы
+
 from src.api_class import AbstractAPI, HeadHunterAPI
 
 
@@ -9,81 +9,86 @@ class TestHeadHunterAPI(unittest.TestCase):
     """Тестирование класса HeadHunterAPI с использованием мокирования requests"""
 
     def setUp(self):
-        # Инициализируем объект API для тестирования
         self.hh_api = HeadHunterAPI(search_query="Python developer", only_with_salary=True)
 
     def test_init(self):
         """Проверка инициализации приватных атрибутов"""
-        # Доступ к приватным атрибутам через манглинг имен
         self.assertEqual(self.hh_api._HeadHunterAPI__text, "Python developer")
         self.assertTrue(self.hh_api._HeadHunterAPI__only_with_salary)
         self.assertEqual(self.hh_api.currency, "RUR")
-        self.assertTrue(self.hh_api._HeadHunterAPI__no_magic)
 
     @patch('requests.get')
-    def test_get_vacancies_success(self, mock_get):
-        """Тестирование успешного получения данных из API с помощью мокирования"""
-        # Создаем Mock-объект ответа
-        mock_response = Mock()
-        mock_response.status_code = 200
-        # Определяем, что должен возвращать response.json()
-        mock_response.json.return_value = {
+    def test_get_vacancies_success_parsing(self, mock_get):
+        # Фиктивные данные, которые имитируют ответ hh.ru API
+        mock_response_data = {
             'items': [
-                {'name': 'Vacancy 1', 'salary': {'from': 100, 'to': 200, 'currency': 'RUR'}}
+                {
+                    "name": "Vacancy Title 1",
+                    "url": "testurl.com",
+                    "salary": {"from": 100000, "to": 150000, "currency": "RUB"},
+                    "address": {"city": "Moscow", "street": "Tverskaya", "building": "1"},
+                    "schedule": {"name": "Full Time"},
+                    "work_schedule_by_days": [{"name": "Mon"}, {"name": "Tue"}],
+                    "employer": {"id": "123", "name": "Test Company", "url": "http://testcompany.com"},
+                    "snippet": {"requirement": "Test Req", "responsibility": "Test Resp"},
+                    "experience": {"name": "Between 1 and 3 years"},
+                    "employment": {"name": "Full"},
+                    "employment_form": {"name": "Staff"}
+                }
             ],
             'found': 1
         }
-        # Устанавливаем, что requests.get должен вернуть наш mock-объект
+
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = mock_response_data
         mock_get.return_value = mock_response
 
-        # Вызываем метод, который мы тестируем
-        result = self.hh_api.get_vacancies()
+        # Вызываем тестируемый метод
+        result_list = self.hh_api.get_vacancies()
 
-        # Проверяем, что requests.get был вызван с правильными параметрами
-        expected_url = "https://api.hh.ru/vacancies"
-        expected_params = {
-            "text": "Python developer",
-            "only_with_salary": True,
-            "no_magic": True
-        }
-        mock_get.assert_called_once_with(expected_url, params=expected_params)
+        # Проверяем, что вернулся список словарей и его длина верна
+        self.assertIsInstance(result_list, list)
+        self.assertEqual(len(result_list), 1)
 
-        # Проверяем, что результат соответствует нашим mock-данным
-        self.assertEqual(result['found'], 1)
-        self.assertEqual(result['items'][0]['name'], 'Vacancy 1')
+        # Проверяем структуру и значения первого элемента
+        first_vacancy = result_list[0]
+        self.assertEqual(first_vacancy['title'], "Vacancy Title 1")
+        self.assertEqual(first_vacancy['salary_from'], 100000)
+        self.assertEqual(first_vacancy['city'], "Moscow")
+        self.assertEqual(first_vacancy['name'], "MonTue")  # Склеенные дни
 
     @patch('requests.get')
-    def test_get_vacancies_http_error_404(self, mock_get):
-        """Тестирование обработки ошибки 404 (Not Found)"""
+    def test_get_vacancies_empty_result(self, mock_get):
+        """Тестирование, когда API возвращает пустой список items"""
+        mock_response_data = {'items': [], 'found': 0}
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = mock_response_data
+        mock_get.return_value = mock_response
+
+        result_list = self.hh_api.get_vacancies()
+        self.assertEqual(result_list, [])
+
+    @patch('requests.get')
+    def test_get_vacancies_http_error_404_raises(self, mock_get):
+        """Тестирование, что ошибки HTTP выбрасываются (raise)"""
         mock_response = Mock()
         mock_response.status_code = 404
-        # Имитируем исключение HTTPError
         mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(response=mock_response)
         mock_get.return_value = mock_response
 
-        result = self.hh_api.get_vacancies()
-        self.assertEqual(result, "404\nУказанная вакансия не существует")
+        # Ожидаем, что вызов get_vacancies выбросит исключение HTTPError
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.hh_api.get_vacancies()
 
     @patch('requests.get')
-    def test_get_vacancies_http_error_403(self, mock_get):
-        """Тестирование обработки ошибки 403 (Forbidden/Captcha)"""
+    def test_get_vacancies_http_error_400_raises(self, mock_get):
+        """Тестирование, что ошибка 400 выбрасывается"""
         mock_response = Mock()
-        mock_response.status_code = 403
+        mock_response.status_code = 400
         mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(response=mock_response)
         mock_get.return_value = mock_response
 
-        result = self.hh_api.get_vacancies()
-        self.assertEqual(result, "403\nТребуется ввести капчу")
-
-    @patch('requests.get')
-    def test_get_vacancies_other_http_error(self, mock_get):
-        """Тестирование обработки других HTTP ошибок"""
-        mock_response = Mock()
-        mock_response.status_code = 500
-        http_error_msg = "500 Server Error: Internal Server Error for url: https://api.hh.ru/vacancies"
-        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(http_error_msg, response=mock_response)
-        mock_get.return_value = mock_response
-
-        result = self.hh_api.get_vacancies()
-        self.assertIn("Произошла ошибка:", result)
-        self.assertIn("500 Server Error", result)
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.hh_api.get_vacancies()

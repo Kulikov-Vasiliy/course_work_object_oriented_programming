@@ -97,7 +97,8 @@ class JSONSaver(AbstractJSONSaver):
         return {
             "title": vacancy_obj.title,
             "url": vacancy_obj.url,
-            "salary": vacancy_obj.salary,
+            "salary_from": vacancy_obj.salary_from,
+            "salary_to": vacancy_obj.salary_to,
             "currency": vacancy_obj.currency,
             "requirement": vacancy_obj.requirement,
             "responsibility": vacancy_obj.responsibility,
