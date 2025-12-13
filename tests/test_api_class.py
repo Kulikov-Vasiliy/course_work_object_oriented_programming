@@ -1,8 +1,9 @@
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
 import requests
 
-from src.api_class import AbstractAPI, HeadHunterAPI
+from src.api_class import HeadHunterAPI
 
 
 class TestHeadHunterAPI(unittest.TestCase):
@@ -17,11 +18,11 @@ class TestHeadHunterAPI(unittest.TestCase):
         self.assertTrue(self.hh_api._HeadHunterAPI__only_with_salary)
         self.assertEqual(self.hh_api.currency, "RUR")
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_get_vacancies_success_parsing(self, mock_get):
         # Фиктивные данные, которые имитируют ответ hh.ru API
         mock_response_data = {
-            'items': [
+            "items": [
                 {
                     "name": "Vacancy Title 1",
                     "url": "testurl.com",
@@ -33,10 +34,10 @@ class TestHeadHunterAPI(unittest.TestCase):
                     "snippet": {"requirement": "Test Req", "responsibility": "Test Resp"},
                     "experience": {"name": "Between 1 and 3 years"},
                     "employment": {"name": "Full"},
-                    "employment_form": {"name": "Staff"}
+                    "employment_form": {"name": "Staff"},
                 }
             ],
-            'found': 1
+            "found": 1,
         }
 
         mock_response = Mock()
@@ -53,15 +54,15 @@ class TestHeadHunterAPI(unittest.TestCase):
 
         # Проверяем структуру и значения первого элемента
         first_vacancy = result_list[0]
-        self.assertEqual(first_vacancy['title'], "Vacancy Title 1")
-        self.assertEqual(first_vacancy['salary_from'], 100000)
-        self.assertEqual(first_vacancy['city'], "Moscow")
-        self.assertEqual(first_vacancy['name'], "MonTue")  # Склеенные дни
+        self.assertEqual(first_vacancy["title"], "Vacancy Title 1")
+        self.assertEqual(first_vacancy["salary_from"], 100000)
+        self.assertEqual(first_vacancy["city"], "Moscow")
+        self.assertEqual(first_vacancy["name"], "MonTue")  # Склеенные дни
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_get_vacancies_empty_result(self, mock_get):
         """Тестирование, когда API возвращает пустой список items"""
-        mock_response_data = {'items': [], 'found': 0}
+        mock_response_data = {"items": [], "found": 0}
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = mock_response_data
@@ -70,7 +71,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         result_list = self.hh_api.get_vacancies()
         self.assertEqual(result_list, [])
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_get_vacancies_http_error_404_raises(self, mock_get):
         """Тестирование, что ошибки HTTP выбрасываются (raise)"""
         mock_response = Mock()
@@ -82,7 +83,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         with self.assertRaises(requests.exceptions.HTTPError):
             self.hh_api.get_vacancies()
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_get_vacancies_http_error_400_raises(self, mock_get):
         """Тестирование, что ошибка 400 выбрасывается"""
         mock_response = Mock()

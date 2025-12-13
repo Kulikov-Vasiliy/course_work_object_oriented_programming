@@ -34,7 +34,7 @@ def get_vacancies_by_salary(filtered_vacancies: list[Vacancy], salary_range: str
         if vacancy.salary_from == "0" and vacancy.salary_to == "0":
             continue
 
-        if vacancy.salary_from < vacancy.salary_to:
+        if int(vacancy.salary_from) < int(vacancy.salary_to):
             if u_salary_from == 0 and u_salary_to == 0:
                 return filtered_vacancies
             elif u_salary_to == 0 and u_salary_from <= int(vacancy.salary_from):
@@ -44,10 +44,12 @@ def get_vacancies_by_salary(filtered_vacancies: list[Vacancy], salary_range: str
             elif u_salary_from <= int(vacancy.salary_from) and u_salary_to >= int(vacancy.salary_to):
                 result.append(vacancy)
 
-        elif vacancy.salary_to < vacancy.salary_from:
-            print(f"Обнаружена ошибка в вакансии: {vacancy} - "
-                  f"перепутан зарплатный диапазон {vacancy.salary_to} - "
-                  f"{vacancy.salary_from}")
+        elif int(vacancy.salary_to) < int(vacancy.salary_from):
+            print(
+                f"Обнаружена ошибка: перепутан зарплатный диапазон "
+                f"{vacancy.salary_to} - {vacancy.salary_from}"
+                f"в вакансии: {vacancy}"
+            )
             # вызывают ошибку в тесте
             vacancy.salary_from = vacancy.salary_to
             vacancy.salary_to = vacancy.salary_from
@@ -60,12 +62,12 @@ def sort_vacancies(ranged_vacancies: list[Vacancy], ascending: bool = True) -> l
     if not ranged_vacancies:
         return []
 
-    def get_salary(vacancy):
+    def get_salary(vacancy):  # type: ignore[no-untyped-def]
         """Извлекает минимальную зарплату из строки"""
         salary_from = int(vacancy.salary_from) if vacancy.salary_from else 0
         salary_to = int(vacancy.salary_to) if vacancy.salary_to else 0
         if salary_from > 0 or salary_to > 0:
-            return min(salary_from, salary_to or float('inf'))
+            return min(salary_from, salary_to or float("inf"))
         return 0
 
     return sorted(ranged_vacancies, key=get_salary, reverse=not ascending)

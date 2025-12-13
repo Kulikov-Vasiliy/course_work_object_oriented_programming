@@ -35,7 +35,17 @@ class Vacancy:
 
                 requirement = item.get("requirement", "Требования не указаны")
                 responsibility = item.get("responsibility", "Обязанности не указаны")
-                vacancies_list.append(Vacancy(title, url, salary_from_str, salary_to_str, currency, requirement, responsibility))
+                vacancies_list.append(
+                    Vacancy(
+                        title,  # type: ignore[arg-type]
+                        url,  # type: ignore[arg-type]
+                        salary_from_str,
+                        salary_to_str,
+                        currency,
+                        requirement,
+                        responsibility
+                    )
+                )
 
             if not item:
                 return []
@@ -76,7 +86,7 @@ class Vacancy:
         # Можно определить через __lt__ или напрямую
         return self.salary_avg > other.salary_avg
 
-    def __repr__(self):
+    def __repr__(self):  # type: ignore[no-untyped-def]
         """Дебаг-вывод в человекочитаемом формате"""
         if self.salary_from != "0" and self.salary_to != "0":
             return (
@@ -102,22 +112,23 @@ class Vacancy:
                 f"requirement={self.requirement[:]}, responsibility={self.responsibility[:]})"
             )
 
-    def __str__(self):
+    def __str__(self):  # type: ignore[no-untyped-def]
         """Вывод в человекочитаемом формате"""
         if self.salary_from != "0" and self.salary_to != "0":
             return (
-                    f"Вакансия: {self.title}\nЗарплата: {self.salary_from} - {self.salary_to} {self.currency}\nURL: {self.url}\n"
-                    f"Требования: {self.requirement[:]}\nОбязанности: {self.responsibility[:]}\n" + "=" * 40
+                f"Вакансия: {self.title}\nЗарплата: {self.salary_from} - "
+                f"{self.salary_to} {self.currency}\nURL: {self.url}\n"
+                f"Требования: {self.requirement[:]}\nОбязанности: {self.responsibility[:]}\n" + "=" * 40
             )
         elif self.salary_from != "0" and self.salary_to == "0":
             return (
-                    f"Вакансия: {self.title}\nЗарплата: {self.salary_from} {self.currency}\nURL: {self.url}\n"
-                    f"Требования: {self.requirement[:]}\nОбязанности: {self.responsibility[:]}\n" + "=" * 40
+                f"Вакансия: {self.title}\nЗарплата: {self.salary_from} {self.currency}\nURL: {self.url}\n"
+                f"Требования: {self.requirement[:]}\nОбязанности: {self.responsibility[:]}\n" + "=" * 40
             )
         elif self.salary_from == "0" and self.salary_to != "0":
             return (
-                    f"Вакансия: {self.title}\nЗарплата: {self.salary_to} {self.currency}\nURL: {self.url}\n"
-                    f"Требования: {self.requirement[:]}\nОбязанности: {self.responsibility[:]}\n" + "=" * 40
+                f"Вакансия: {self.title}\nЗарплата: {self.salary_to} {self.currency}\nURL: {self.url}\n"
+                f"Требования: {self.requirement[:]}\nОбязанности: {self.responsibility[:]}\n" + "=" * 40
             )
         elif self.salary_from == "0" and self.salary_to == "0":
             return (

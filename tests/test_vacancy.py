@@ -1,6 +1,5 @@
-import pytest
-
 from src.vacancy import Vacancy
+
 
 class TestVacancy:
 
@@ -37,21 +36,21 @@ class TestVacancy:
 
     def test_comparison_equal(self):
         """Проверка оператора равенства (==)"""
-        v1 = Vacancy("A", "U1", "50000", "70000", "RUR") # avg 60000
-        v2 = Vacancy("B", "U2", "60000", "60000", "RUR") # avg 60000
+        v1 = Vacancy("A", "U1", "50000", "70000", "RUR")  # avg 60000
+        v2 = Vacancy("B", "U2", "60000", "60000", "RUR")  # avg 60000
         assert (v1 == v2) is True
 
     def test_comparison_less_than(self):
         """Проверка оператора 'меньше чем' (<)"""
-        v1 = Vacancy("A", "U1", "40000", "0", "RUR") # avg 40000
-        v2 = Vacancy("B", "U2", "0", "80000", "RUR") # avg 80000
+        v1 = Vacancy("A", "U1", "40000", "0", "RUR")  # avg 40000
+        v2 = Vacancy("B", "U2", "0", "80000", "RUR")  # avg 80000
         assert (v1 < v2) is True
         assert (v2 < v1) is False
 
     def test_comparison_greater_than(self):
         """Проверка оператора 'больше чем' (>)"""
-        v1 = Vacancy("A", "U1", "100000", "0", "RUR") # avg 100000
-        v2 = Vacancy("B", "U2", "0", "50000", "RUR") # avg 50000
+        v1 = Vacancy("A", "U1", "100000", "0", "RUR")  # avg 100000
+        v2 = Vacancy("B", "U2", "0", "50000", "RUR")  # avg 50000
         assert (v1 > v2) is True
         assert (v2 > v1) is False
 
@@ -65,7 +64,7 @@ class TestVacancy:
                 "salary_to": 150000,
                 "currency": "RUR",
                 "requirement": "Linux",
-                "responsibility": "CI/CD"
+                "responsibility": "CI/CD",
             },
             {
                 "title": "Analyst",
@@ -73,7 +72,7 @@ class TestVacancy:
                 "salary_from": None,
                 "salary_to": 80000,
                 "currency": "RUR",
-            }
+            },
         ]
         vacancies = Vacancy.cast_to_object_list(data)
         assert len(vacancies) == 2
@@ -90,17 +89,22 @@ class TestVacancy:
     def test_repr_method(self):
         """Тестирование метода __repr__ для отладочного вывода"""
         v = Vacancy("Manager", "http://url.com", "40000", "60000", "USD")
-        expected_repr = "Vacancy(title='Manager', url='http://url.com', salary='40000 - 60000 USD', requirement=Требования не указаны, responsibility=Обязанности не указаны)"
+        expected_repr = ("Vacancy(title='Manager', url='http://url.com', salary='40000 - 60000 USD', "
+                         "requirement=Требования не указаны, responsibility=Обязанности не указаны)")
         assert repr(v) == expected_repr
 
     def test_str_method_full_salary(self):
         """Тестирование метода __str__ для пользовательского вывода (полная ЗП)"""
         v = Vacancy("Coder", "http://code.com", "80000", "120000", "RUR")
-        expected_str_start = "Вакансия: Coder\nЗарплата: 80000 - 120000 RUR\nURL: http://code.com\nТребования: Требования не указаны\nОбязанности: Обязанности не указаны\n"
+        expected_str_start = ("Вакансия: Coder\nЗарплата: 80000 - 120000 RUR\n"
+                              "URL: http://code.com\nТребования: Требования не указаны\n"
+                              "Обязанности: Обязанности не указаны\n")
         assert v.__str__().startswith(expected_str_start)
 
     def test_str_method_no_salary(self):
         """Тестирование метода __str__ для пользовательского вывода (ЗП не указана)"""
         v = Vacancy("Intern", "http://int.com", "0", "0", None)
-        expected_str_start = "Вакансия: Intern\nЗарплата: 0\nURL: http://int.com\nТребования: Требования не указаны\nОбязанности: Обязанности не указаны\n"
+        expected_str_start = ("Вакансия: Intern\nЗарплата: 0\nURL: http://int.com\n"
+                              "Требования: Требования не указаны\n"
+                              "Обязанности: Обязанности не указаны\n")
         assert v.__str__().startswith(expected_str_start)

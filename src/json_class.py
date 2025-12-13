@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 from src.vacancy import Vacancy
 
@@ -28,6 +28,7 @@ class AbstractJSONSaver(ABC):
         """Метод для удаления списка объектов Vacancy из файла."""
         pass
 
+
 class JSONSaver(AbstractJSONSaver):
     """
     Класс для сохранения вакансий в json-файл и их удаления из него.
@@ -45,7 +46,7 @@ class JSONSaver(AbstractJSONSaver):
     def __read_data(self) -> List[Dict[str, Any]]:
         """Внутренний метод для чтения данных из файла."""
         with open(self.filename, "r", encoding="utf-8") as f:
-            return json.load(f)
+            return json.load(f)  # type: ignore[no-any-return]
 
     def __write_data(self, data: List[Dict[str, Any]]) -> None:
         """Внутренний метод для записи данных в файл."""
@@ -60,7 +61,9 @@ class JSONSaver(AbstractJSONSaver):
         data.extend(vac_dicts)
         self.__write_data(data)
 
-    def get_vacancies(self, criteria: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def get_vacancies(  # type: ignore[override]
+            self, criteria: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         # Этот метод возвращает list[dict] из файла, что корректно по логике
         data = self.__read_data()
         if criteria is None:
