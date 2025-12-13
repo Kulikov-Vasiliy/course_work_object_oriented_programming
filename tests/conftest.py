@@ -1,5 +1,8 @@
 import pytest
+
+from src.json_class import JSONSaver
 from src.vacancy import Vacancy
+import pathlib
 
 
 @pytest.fixture
@@ -25,3 +28,36 @@ def actual_titles():
         "Java Developer (Senior)",
         "Python Developer (Mid)",
     ]
+
+
+# Используем реальные объекты Vacancy в тестах
+@pytest.fixture
+def sample_vacancies_list():
+    """Возвращает список реальных объектов Vacancy для тестирования"""
+    return [
+        Vacancy("Python Developer", "http://url.com/p", "100000", "150000", "RUR"),
+        Vacancy("Java Developer", "http://url.com/j", "120000", "180000", "RUR"),
+        Vacancy("QA Engineer", "http://url.com/q", "50000", "80000", "RUR"),
+    ]
+
+
+
+@pytest.fixture
+def sample_vacancies_list():
+    """Возвращает список реальных объектов Vacancy для тестирования"""
+    return [
+        Vacancy("Python Developer (Junior)", "http://url.com/p", "100000", "150000", "RUR"),
+        Vacancy("Java Developer (Senior)", "http://url.com/j", "120000", "180000", "RUR"),
+        Vacancy("QA Engineer (Mid)", "http://url.com/q", "50000", "80000", "RUR"),
+    ]
+
+
+@pytest.fixture
+def temp_json_saver(tmp_path):
+    """
+    Создает временный JSON файл и инициализирует JSONSaver для тестов.
+    tmp_path - это встроенная фикстура pytest для временных директорий.
+    """
+    test_file: pathlib.Path = tmp_path / "test_vacancies.json"
+    saver = JSONSaver(filename=test_file)
+    return saver

@@ -32,8 +32,11 @@ class TestFilterVacancies:
         """Проверка, что фильтр не чувствителен к регистру"""
         filter_words = "qa"
         filtered = filter_vacancies(sample_vacancies_list_objects, filter_words)
+
+        # Убеждаемся, что найдена ровно 1 вакансия
         assert len(filtered) == 1
-        assert filtered.title == "QA Engineer (Junior)"
+
+        assert filtered[0].title == "QA Engineer (Junior)"
 
     def test_filter_empty_words(self, sample_vacancies_list_objects):
         """Проверка обработки пустой строки фильтра"""

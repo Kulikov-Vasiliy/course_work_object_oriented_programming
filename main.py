@@ -55,7 +55,7 @@ def user_interaction() -> None:
     # Сохранение информации о вакансиях в файл
     json_saver = JSONSaver(filename=path_file)
     json_saver.add_vacancy(vacancies_list)
-    json_saver.delete_vacancy_by_object(vacancies_list)
+    json_saver.delete_vacancy(vacancies_list)
     # json_saver.delete_vacancy(vacancies_list)  # не работает в таком виде
 
 
