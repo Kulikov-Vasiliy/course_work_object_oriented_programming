@@ -24,14 +24,24 @@ def user_interaction() -> None:
     # filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
     filter_words = "Python Django"
     # salary_range = input("Введите диапазон зарплат: ") # Пример: 100000 - 150000
-    salary_range = "100000 - 300000"
+    salary_range = "10000 - 300000"
 
-    # Пример использования HeadHunterAPI
-    hh_api = HeadHunterAPI(
-        search_query=search_query,
-        only_with_salary=True if with_salary == "Y" else False,
-    )
-    hh_vacancies_json = hh_api.get_vacancies()
+    try:
+        # Пример использования HeadHunterAPI
+        hh_api = HeadHunterAPI(
+            search_query=search_query,
+            only_with_salary=True if with_salary == "Y" else False,
+        )
+
+    except 400:
+        print("400\nПараметры переданы с ошибкой")
+    except 403:
+        print("403\nТребуется ввести капчу")
+    except 404:
+        print("404\nУказанная вакансия не существует")
+
+    else:
+        hh_vacancies_json = hh_api.get_vacancies()
 
     # if isinstance(hh_vacancies_json, str):
     #     print(hh_vacancies_json)
@@ -56,7 +66,6 @@ def user_interaction() -> None:
     json_saver = JSONSaver(filename=path_file)
     json_saver.add_vacancy(vacancies_list)
     json_saver.delete_vacancy(vacancies_list)
-    # json_saver.delete_vacancy(vacancies_list)  # не работает в таком виде
 
 
 if __name__ == "__main__":

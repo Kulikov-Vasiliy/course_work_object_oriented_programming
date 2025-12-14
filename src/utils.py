@@ -47,7 +47,7 @@ def get_vacancies_by_salary(filtered_vacancies: list[Vacancy], salary_range: str
         elif int(vacancy.salary_to) < int(vacancy.salary_from):
             print(
                 f"Обнаружена ошибка: перепутан зарплатный диапазон "
-                f"{vacancy.salary_to} - {vacancy.salary_from}"
+                f"{vacancy.salary_to} - {vacancy.salary_from} "
                 f"в вакансии: {vacancy}"
             )
             # вызывают ошибку в тесте

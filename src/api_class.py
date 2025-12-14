@@ -98,7 +98,7 @@ class HeadHunterAPI(AbstractAPI):
                 # print(item)
                 title = item.get("name")
                 alternate_url = item.get("url")
-                salary_info = item.get("salary", {})
+                salary_info = item.get("salary", {})  # параметр устаревший
                 if salary_info:
                     salary_from = salary_info.get("from")
                     salary_to = salary_info.get("to")
