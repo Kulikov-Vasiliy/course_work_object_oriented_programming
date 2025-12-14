@@ -1,79 +1,82 @@
-import pytest
-import os
 import json
-from src.json_class import JSONSaver, AbstractJSONSaver
+from io import StringIO
+from unittest.mock import patch
+
+import pytest
+
+from src.json_class import AbstractJSONSaver, JSONSaver
 
 
-def test_initialization(temp_json_file):
-    """Проверяет, что файл создается при инициализации."""
-    assert os.path.exists(temp_json_file)
-    with open(temp_json_file, 'r', encoding='utf-8') as f:
-        assert json.load(f) == []
+class TestJSONSaver:
 
+    def test_instantiation_creates_file(self, tmp_path):
+        """Проверка, что файл создается при инициализации, если его нет"""
+        temp_file = tmp_path / "new_file.json"
+        assert not temp_file.exists()
 
-def test_add_vacancy(json_saver, sample_vacancies):
-    """Проверяет добавление списка вакансий в файл."""
-    json_saver.add_vacancy(sample_vacancies)
-    data = json_saver._JSONSaver__read_data()  # Доступ к приватному методу для чтения
+        saver = JSONSaver(filename=temp_file) # noqa F841
+        assert temp_file.exists()
+        # Проверяем, что файл инициализирован пустым списком
+        with open(temp_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            assert data == []
 
-    assert len(data) == 3
-    assert data[0]['title'] == "Python Developer"
-    assert data[2]['currency'] == "USD"
+    def test_add_vacancy(self, temp_json_saver, sample_vacancies_list):
+        """Проверка добавления одной вакансии"""
+        vac_to_add = sample_vacancies_list[:1]  # Берем только первую вакансию
+        temp_json_saver.add_vacancy(vac_to_add)
 
+        # Читаем данные напрямую для проверки внутреннего состояния
+        data = temp_json_saver._JSONSaver__read_data()
+        assert len(data) == 1
+        assert data[0]["title"] == "Python Developer"
+        assert data[0]["url"] == "http://url.com/p"
 
-def test_get_vacancies_all(json_saver, sample_vacancies):
-    """Проверяет получение всех вакансий из файла."""
-    json_saver.add_vacancy(sample_vacancies)
-    vacs = json_saver.get_vacancies()
-    assert len(vacs) == 3
+    def test_add_multiple_vacancies(self, temp_json_saver, sample_vacancies_list):
+        """Проверка добавления нескольких вакансий"""
+        temp_json_saver.add_vacancy(sample_vacancies_list)
 
+        data = temp_json_saver._JSONSaver__read_data()
+        assert len(data) == 3
+        assert data[-1]["title"] == "QA Engineer"  # Проверяем последний добавленный элемент
 
-def test_get_vacancies_with_criteria(json_saver, sample_vacancies):
-    """Проверяет получение вакансий по критериям (фильтрацию)."""
-    json_saver.add_vacancy(sample_vacancies)
+    def test_get_vacancies_all(self, temp_json_saver, sample_vacancies_list):
+        """Проверка получения всех вакансий"""
+        temp_json_saver.add_vacancy(sample_vacancies_list)
+        vacancies_data = temp_json_saver.get_vacancies()
+        assert len(vacancies_data) == 3
+        # Проверяем первый элемент полученного списка словарей
+        assert vacancies_data[0]["title"] == "Python Developer"
 
-    # Поиск по валюте USD
-    usd_vacs = json_saver.get_vacancies(criteria={'currency': 'USD'})
-    assert len(usd_vacs) == 1
-    assert usd_vacs[0]['title'] == "Data Scientist"
+    def test_get_vacancies_with_criteria(self, temp_json_saver, sample_vacancies_list):
+        """Проверка получения вакансий по критериям"""
+        temp_json_saver.add_vacancy(sample_vacancies_list)
 
-    # Поиск по несуществующему критерию
-    non_existent = json_saver.get_vacancies(criteria={'title': 'Non Existent Job'})
-    assert len(non_existent) == 0
+        # Фильтруем по названию
+        criteria = {"title": "Java Developer"}
+        filtered = temp_json_saver.get_vacancies(criteria=criteria)
 
+        assert len(filtered) == 1
+        assert filtered[0]["title"] == "Java Developer"
 
-def test_delete_vacancy_by_criteria(json_saver, sample_vacancies, capsys):
-    """Проверяет удаление вакансий по критериям."""
-    json_saver.add_vacancy(sample_vacancies)
+    @patch("sys.stdout", new_callable=StringIO)  # Используем StringIO для более чистого захвата вывода
+    def test_delete_vacancy(self, mock_stdout, temp_json_saver, sample_vacancies_list):
+        """Проверка удаления вакансий по списку объектов и подсчета удаленных"""
+        temp_json_saver.add_vacancy(sample_vacancies_list)
+        assert len(temp_json_saver.get_vacancies()) == 3
 
-    # Удаляем все вакансии с валютой RUB
-    json_saver.delete_vacancy(criteria={'currency': 'RUB'})
+        vacs_to_delete = sample_vacancies_list[1:]  # Удаляем Java и QA
+        temp_json_saver.delete_vacancy(vacs_to_delete)
 
-    data = json_saver._JSONSaver__read_data()
-    assert len(data) == 1
-    assert data[0]['title'] == "Data Scientist"
+        data = temp_json_saver.get_vacancies()
+        assert len(data) == 1
+        titles = sorted([item["title"] for item in data])
+        assert titles == ["Python Developer"]
 
-    captured = capsys.readouterr()
-    assert "Удалено 2 вакансий из" in captured.out
+        output = mock_stdout.getvalue()
+        assert "Удалено 2 вакансий из" in output
 
-
-def test_delete_vacancy_by_object(json_saver, sample_vacancies, capsys):
-    """Проверяет удаление списка объектов с помощью нового метода."""
-    json_saver.add_vacancy(sample_vacancies)
-
-    # Удаляем только "QA Engineer" и "Data Scientist"
-    to_delete_list = [sample_vacancies[1], sample_vacancies[2]]
-    json_saver.delete_vacancy_by_object(to_delete_list)
-
-    data = json_saver._JSONSaver__read_data()
-    assert len(data) == 1
-    assert data[0]['title'] == "Python Developer"
-
-    captured = capsys.readouterr()
-    assert "Удалено 2 вакансий из" in captured.out
-
-
-def test_abstract_class_instantiation():
-    """Проверяет, что абстрактный класс нельзя инстанцировать напрямую."""
-    with pytest.raises(TypeError):
-        AbstractJSONSaver()
+    def test_abstract_class_instantiation(self):
+        """Проверка, что AbstractJSONSaver нельзя инстанцировать напрямую"""
+        with pytest.raises(TypeError, match="Can't instantiate abstract class"):
+            AbstractJSONSaver()
