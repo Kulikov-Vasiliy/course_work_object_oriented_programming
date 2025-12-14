@@ -43,29 +43,25 @@ def user_interaction() -> None:
     else:
         hh_vacancies_json = hh_api.get_vacancies()
 
-    # if isinstance(hh_vacancies_json, str):
-    #     print(hh_vacancies_json)
-    #     return
+        # Преобразование набора данных из JSON в список объектов
+        vacancies_list = Vacancy.cast_to_object_list(hh_vacancies_json)
+        # for vac in vacancies_list[:top_n]:
+        #     print(vac)
 
-    # Преобразование набора данных из JSON в список объектов
-    vacancies_list = Vacancy.cast_to_object_list(hh_vacancies_json)
-    # for vac in vacancies_list[:top_n]:
-    #     print(vac)
+        filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
+        # print(filtered_vacancies)
 
-    filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
-    # print(filtered_vacancies)
+        ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
+        # print(ranged_vacancies)
 
-    ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
-    # print(ranged_vacancies)
+        sorted_vacancies = sort_vacancies(ranged_vacancies)
+        top_vacancies = get_top_vacancies(sorted_vacancies, top_n)
+        print_vacancies(top_vacancies)
 
-    sorted_vacancies = sort_vacancies(ranged_vacancies)
-    top_vacancies = get_top_vacancies(sorted_vacancies, top_n)
-    print_vacancies(top_vacancies)
-
-    # Сохранение информации о вакансиях в файл
-    json_saver = JSONSaver(filename=path_file)
-    json_saver.add_vacancy(vacancies_list)
-    json_saver.delete_vacancy(vacancies_list)
+        # Сохранение информации о вакансиях в файл
+        json_saver = JSONSaver(filename=path_file)
+        json_saver.add_vacancy(vacancies_list)
+        json_saver.delete_vacancy(vacancies_list)
 
 
 if __name__ == "__main__":
