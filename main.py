@@ -1,4 +1,5 @@
 # Функция для взаимодействия с пользователем
+import requests
 from src.api_class import HeadHunterAPI
 from src.json_class import DATA_PATH, JSONSaver
 from src.utils import (
@@ -33,12 +34,13 @@ def user_interaction() -> None:
             only_with_salary=True if with_salary == "Y" else False,
         )
 
-    except 400:
-        print("400\nПараметры переданы с ошибкой")
-    except 403:
-        print("403\nТребуется ввести капчу")
-    except 404:
-        print("404\nУказанная вакансия не существует")
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 400:
+            print("400\nПараметры переданы с ошибкой")
+        elif e.response.status_code == 403:
+            print("403\nТребуется ввести капчу")
+        elif e.response.status_code == 404:
+            print("404\nУказанная вакансия не существует")
 
     else:
         hh_vacancies_json = hh_api.get_vacancies()
